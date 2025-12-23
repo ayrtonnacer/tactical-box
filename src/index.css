@@ -109,10 +109,11 @@
     border: 3px solid hsl(var(--circle-bad));
   }
 
-  /* Captured bad - show X */
+  /* Captured bad - show X clearly */
   .circle-captured-bad {
     background: transparent;
     border: 3px solid hsl(var(--foreground));
+    opacity: 0.4;
   }
 
   /* Captured good - dimmed */

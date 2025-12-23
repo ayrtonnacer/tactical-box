@@ -116,7 +116,7 @@ export function GameCanvas({
         >
           {/* Show X on captured bad circles */}
           {circle.captured && circle.type === 'bad' && (
-            <X className="w-4 h-4 text-foreground" strokeWidth={3} />
+            <X className="w-6 h-6 text-foreground" strokeWidth={4} />
           )}
         </div>
       ))}
