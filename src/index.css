@@ -4,76 +4,75 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ShadowBox - Atari 80s Retro Style */
+/* ShadowBox - 8-bit Monochrome Blue/White */
 
 @layer base {
   :root {
-    /* Pure Atari Blue Background */
-    --background: 235 70% 35%;
+    /* Pure CRT Blue */
+    --background: 240 100% 25%;
     --foreground: 0 0% 100%;
 
-    /* Card surfaces - slightly lighter blue */
-    --card: 235 70% 40%;
+    --card: 240 100% 30%;
     --card-foreground: 0 0% 100%;
 
-    --popover: 235 70% 38%;
+    --popover: 240 100% 28%;
     --popover-foreground: 0 0% 100%;
 
-    /* Primary - Bright Yellow (Good circles) */
-    --primary: 55 100% 55%;
-    --primary-foreground: 0 0% 0%;
+    /* Primary - White */
+    --primary: 0 0% 100%;
+    --primary-foreground: 240 100% 25%;
 
-    /* Secondary - Pure White (Bad circles) */
-    --secondary: 0 0% 100%;
-    --secondary-foreground: 235 70% 35%;
+    /* Secondary - Light Blue */
+    --secondary: 210 100% 80%;
+    --secondary-foreground: 240 100% 20%;
 
-    /* Muted */
-    --muted: 235 50% 45%;
-    --muted-foreground: 235 30% 75%;
+    /* Muted - Dim Blue */
+    --muted: 240 60% 40%;
+    --muted-foreground: 210 50% 70%;
 
-    /* Accent - Selection Box Green */
-    --accent: 120 80% 45%;
+    /* Accent - Bright Blue */
+    --accent: 200 100% 60%;
     --accent-foreground: 0 0% 100%;
 
-    /* Destructive - Atari Red */
-    --destructive: 0 85% 50%;
-    --destructive-foreground: 0 0% 100%;
+    /* Destructive - kept for game over text */
+    --destructive: 0 0% 100%;
+    --destructive-foreground: 240 100% 25%;
 
-    --border: 235 50% 50%;
-    --input: 235 50% 45%;
-    --ring: 55 100% 55%;
+    --border: 210 60% 50%;
+    --input: 240 60% 40%;
+    --ring: 0 0% 100%;
 
     --radius: 0;
 
-    /* Game specific */
-    --game-bg: 235 70% 35%;
-    --circle-good: 55 100% 55%;
-    --circle-bad: 0 0% 100%;
-    --circle-captured: 0 75% 50%;
-    --selection-box: 120 80% 50%;
+    /* Game specific - monochrome */
+    --game-bg: 240 100% 25%;
+    --circle-good: 0 0% 100%;
+    --circle-bad: 210 60% 60%;
+    --circle-captured: 0 70% 60%;
+    --selection-box: 180 100% 70%;
   }
 
   .dark {
-    --background: 235 80% 20%;
+    --background: 240 100% 15%;
     --foreground: 0 0% 100%;
-    --card: 235 80% 25%;
+    --card: 240 100% 20%;
     --card-foreground: 0 0% 100%;
-    --popover: 235 80% 22%;
+    --popover: 240 100% 18%;
     --popover-foreground: 0 0% 100%;
-    --primary: 55 100% 55%;
-    --primary-foreground: 0 0% 0%;
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 235 80% 20%;
-    --muted: 235 60% 30%;
-    --muted-foreground: 235 30% 70%;
-    --accent: 120 80% 45%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 240 100% 15%;
+    --secondary: 210 80% 70%;
+    --secondary-foreground: 240 100% 15%;
+    --muted: 240 50% 25%;
+    --muted-foreground: 210 40% 60%;
+    --accent: 200 100% 50%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 80% 45%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 235 60% 35%;
-    --input: 235 60% 30%;
-    --ring: 55 100% 55%;
-    --game-bg: 235 80% 20%;
+    --destructive: 0 0% 100%;
+    --destructive-foreground: 240 100% 15%;
+    --border: 210 50% 40%;
+    --input: 240 50% 25%;
+    --ring: 0 0% 100%;
+    --game-bg: 240 100% 15%;
   }
 }
 
@@ -99,22 +98,26 @@
     @apply absolute rounded-full;
   }
 
+  /* Good circles - solid white */
   .circle-good {
     background: hsl(var(--circle-good));
   }
 
+  /* Bad circles - outline only */
   .circle-bad {
-    background: hsl(var(--circle-bad));
+    background: transparent;
+    border: 3px solid hsl(var(--circle-bad));
   }
 
   .circle-captured {
     background: hsl(var(--circle-captured));
+    border: none;
   }
 
   .selection-box {
     @apply absolute pointer-events-none;
-    border: 3px solid hsl(var(--selection-box));
-    background: hsl(var(--selection-box) / 0.2);
+    border: 2px solid hsl(var(--selection-box));
+    background: hsl(var(--selection-box) / 0.15);
   }
 
   .game-button {
@@ -125,16 +128,21 @@
   }
 
   .game-button:hover {
-    filter: brightness(1.1);
-  }
-
-  .game-button:active {
     filter: brightness(0.9);
   }
 
+  .game-button:active {
+    filter: brightness(0.8);
+  }
+
   .game-button-secondary {
-    background: hsl(var(--muted));
+    background: transparent;
     color: hsl(var(--foreground));
+    border: 2px solid hsl(var(--foreground));
+  }
+
+  .game-button-secondary:hover {
+    background: hsl(var(--foreground) / 0.1);
   }
 
   .heart-icon {
@@ -151,7 +159,6 @@
   }
 
   .timer-urgent {
-    color: hsl(var(--destructive));
     animation: blink 0.5s step-end infinite;
   }
 }
@@ -164,7 +171,7 @@
 
 @keyframes blink {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  50% { opacity: 0.3; }
 }
 
 @keyframes shake {
