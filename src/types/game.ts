@@ -14,73 +14,33 @@ export interface SelectionBox {
   y2: number;
 }
 
-export interface ScorePopup {
-  id: string;
-  x: number;
-  y: number;
-  value: number;
-  type: 'success' | 'error';
-}
-
 export interface GameConfig {
   yellowCount: number;
   whiteCount: number;
   timerDuration: number;
-  timerAcceleration: number;
   maxHealth: number;
 }
 
-export interface DifficultyLevel {
-  name: string;
-  label: string;
-  config: GameConfig;
+export type GameState = 'menu' | 'playing' | 'gameover';
+
+// Progressive difficulty based on round number
+export function getConfigForRound(round: number): GameConfig {
+  // Base values
+  const baseYellow = 3;
+  const baseWhite = 2;
+  const baseTimer = 45;
+  const baseHealth = 5;
+
+  // Progressive scaling
+  const yellowCount = Math.min(baseYellow + Math.floor((round - 1) / 2), 12);
+  const whiteCount = Math.min(baseWhite + Math.floor((round - 1) / 2), 10);
+  const timerDuration = Math.max(baseTimer - (round - 1) * 2, 15);
+  const maxHealth = Math.max(baseHealth - Math.floor((round - 1) / 3), 2);
+
+  return {
+    yellowCount,
+    whiteCount,
+    timerDuration,
+    maxHealth,
+  };
 }
-
-export type GameState = 'menu' | 'playing' | 'gameover' | 'victory';
-
-export const DIFFICULTIES: DifficultyLevel[] = [
-  {
-    name: 'easy',
-    label: 'EASY',
-    config: {
-      yellowCount: 3,
-      whiteCount: 2,
-      timerDuration: 60,
-      timerAcceleration: 0.05,
-      maxHealth: 5,
-    },
-  },
-  {
-    name: 'normal',
-    label: 'NORMAL',
-    config: {
-      yellowCount: 5,
-      whiteCount: 4,
-      timerDuration: 45,
-      timerAcceleration: 0.1,
-      maxHealth: 4,
-    },
-  },
-  {
-    name: 'hard',
-    label: 'HARD',
-    config: {
-      yellowCount: 7,
-      whiteCount: 6,
-      timerDuration: 30,
-      timerAcceleration: 0.15,
-      maxHealth: 3,
-    },
-  },
-  {
-    name: 'insane',
-    label: 'INSANE',
-    config: {
-      yellowCount: 10,
-      whiteCount: 8,
-      timerDuration: 20,
-      timerAcceleration: 0.2,
-      maxHealth: 2,
-    },
-  },
-];

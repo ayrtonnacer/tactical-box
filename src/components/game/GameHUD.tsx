@@ -6,8 +6,6 @@ interface GameHUDProps {
   maxHealth: number;
   hearts: number;
   timer: number;
-  score: number;
-  combo: number;
   round: number;
 }
 
@@ -16,8 +14,6 @@ export function GameHUD({
   maxHealth,
   hearts,
   timer,
-  score,
-  combo,
   round,
 }: GameHUDProps) {
   const healthPercentage = (health / maxHealth) * 100;
@@ -42,7 +38,7 @@ export function GameHUD({
               {health}/{maxHealth}
             </span>
           </div>
-          <div className="health-bar w-32">
+          <div className="health-bar w-28">
             <div
               className={cn(
                 "health-fill",
@@ -54,27 +50,18 @@ export function GameHUD({
             />
           </div>
         </div>
-
-        {/* Round indicator */}
-        <div className="bg-card/80 backdrop-blur-sm rounded px-3 py-1 border border-border">
-          <span className="font-display text-xs text-muted-foreground">ROUND </span>
-          <span className="font-display text-xs text-primary">{round}</span>
-        </div>
       </div>
 
-      {/* Center - Score */}
+      {/* Center - Round (Main Metric) */}
       <div className="flex flex-col items-center gap-1">
-        <div className="bg-card/80 backdrop-blur-sm rounded px-4 py-2 border border-border">
-          <span className="font-display text-lg text-primary text-shadow-glow">
-            {score.toLocaleString()}
+        <div className="bg-card/80 backdrop-blur-sm rounded px-6 py-3 border border-primary/50">
+          <span className="font-display text-xs text-muted-foreground block text-center mb-1">
+            ROUND
+          </span>
+          <span className="font-display text-3xl text-primary text-shadow-glow block text-center">
+            {round}
           </span>
         </div>
-        {combo > 1 && (
-          <div className="combo-badge animate-pop-in">
-            <span>×{(1 + (combo - 1) * 0.1).toFixed(1)}</span>
-            <span className="text-accent-foreground/70">COMBO</span>
-          </div>
-        )}
       </div>
 
       {/* Right Side - Timer & Hearts */}

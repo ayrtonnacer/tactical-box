@@ -8,18 +8,15 @@ export function ShadowBoxGame() {
   const {
     gameState,
     setGameState,
-    difficultyIndex,
     circles,
     health,
     maxHealth,
     hearts,
     timer,
-    score,
-    combo,
     round,
+    bestRound,
     selectionBox,
     setSelectionBox,
-    scorePopups,
     shakeScreen,
     startGame,
     handleSelectionComplete,
@@ -27,16 +24,15 @@ export function ShadowBoxGame() {
   } = useGameLogic();
 
   if (gameState === 'menu') {
-    return <MenuScreen onStartGame={startGame} />;
+    return <MenuScreen onStartGame={startGame} bestRound={bestRound} />;
   }
 
   if (gameState === 'gameover') {
     return (
       <GameOverScreen
-        score={score}
         round={round}
-        difficultyIndex={difficultyIndex}
-        onRetry={() => startGame(difficultyIndex)}
+        bestRound={bestRound}
+        onRetry={startGame}
         onMenu={() => setGameState('menu')}
       />
     );
@@ -49,8 +45,6 @@ export function ShadowBoxGame() {
         maxHealth={maxHealth}
         hearts={hearts}
         timer={timer}
-        score={score}
-        combo={combo}
         round={round}
       />
       
@@ -59,15 +53,14 @@ export function ShadowBoxGame() {
         selectionBox={selectionBox}
         setSelectionBox={setSelectionBox}
         onSelectionComplete={handleSelectionComplete}
-        scorePopups={scorePopups}
         shakeScreen={shakeScreen}
         onResize={updateCanvasSize}
       />
 
-      {/* Pause hint */}
+      {/* Hint */}
       <div className="absolute bottom-4 left-4 pointer-events-none">
         <span className="font-game text-xs text-muted-foreground/50">
-          Select all yellow circles without touching white ones
+          Select all yellow circles
         </span>
       </div>
     </div>

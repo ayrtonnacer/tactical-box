@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { Circle, SelectionBox, ScorePopup } from '@/types/game';
+import { Circle, SelectionBox } from '@/types/game';
 import { cn } from '@/lib/utils';
 
 interface GameCanvasProps {
@@ -7,7 +7,6 @@ interface GameCanvasProps {
   selectionBox: SelectionBox | null;
   setSelectionBox: (box: SelectionBox | null) => void;
   onSelectionComplete: (box: SelectionBox) => void;
-  scorePopups: ScorePopup[];
   shakeScreen: boolean;
   onResize: (width: number, height: number) => void;
 }
@@ -17,7 +16,6 @@ export function GameCanvas({
   selectionBox,
   setSelectionBox,
   onSelectionComplete,
-  scorePopups,
   shakeScreen,
   onResize,
 }: GameCanvasProps) {
@@ -69,7 +67,7 @@ export function GameCanvas({
     });
   }, [isDragging, getMousePos, startPos, setSelectionBox]);
 
-  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+  const handleMouseUp = useCallback(() => {
     if (!isDragging || !selectionBox) return;
     
     setIsDragging(false);
@@ -129,23 +127,6 @@ export function GameCanvas({
           }}
         />
       )}
-
-      {/* Score Popups */}
-      {scorePopups.map(popup => (
-        <div
-          key={popup.id}
-          className={cn(
-            "score-popup font-display",
-            popup.type === 'success' ? "text-primary" : "text-destructive"
-          )}
-          style={{
-            left: popup.x,
-            top: popup.y,
-          }}
-        >
-          {popup.type === 'success' ? `+${popup.value}` : popup.value}
-        </div>
-      ))}
     </div>
   );
 }

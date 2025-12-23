@@ -1,15 +1,16 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { Circle, SelectionBox, ScorePopup, GameConfig, GameState, DIFFICULTIES } from '@/types/game';
+import { Circle, SelectionBox, GameConfig, GameState, getConfigForRound } from '@/types/game';
+import { useSoundEffects } from './useSoundEffects';
 
 const CIRCLE_RADIUS = 20;
 const CIRCLE_SPACING = 50;
 
 // Define safe margins to avoid HUD elements
 const HUD_MARGINS = {
-  top: 120,     // Space for HP bar, round indicator, score, timer, hearts
-  left: 160,    // Space for HP bar and round indicator
-  right: 120,   // Space for timer and hearts
-  bottom: 60,   // Space for bottom hint text
+  top: 100,
+  left: 140,
+  right: 100,
+  bottom: 50,
 };
 
 function generateCircles(config: GameConfig, canvasWidth: number, canvasHeight: number): Circle[] {
@@ -50,6 +51,8 @@ function generateCircles(config: GameConfig, canvasWidth: number, canvasHeight: 
   // Pick a cluster center for yellow circles
   const totalCircles = config.yellowCount + config.whiteCount;
   const usedPositions = positions.slice(0, Math.min(totalCircles * 3, positions.length));
+  
+  if (usedPositions.length === 0) return circles;
   
   // Pick center for yellow cluster
   const clusterCenterIdx = Math.floor(Math.random() * usedPositions.length);
@@ -109,57 +112,68 @@ function isCircleInBox(circle: Circle, box: SelectionBox): boolean {
 
 export function useGameLogic() {
   const [gameState, setGameState] = useState<GameState>('menu');
-  const [difficultyIndex, setDifficultyIndex] = useState(0);
   const [circles, setCircles] = useState<Circle[]>([]);
   const [health, setHealth] = useState(5);
   const [maxHealth, setMaxHealth] = useState(5);
   const [hearts, setHearts] = useState(3);
-  const [timer, setTimer] = useState(60);
-  const [score, setScore] = useState(0);
-  const [combo, setCombo] = useState(0);
-  const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
-  const [scorePopups, setScorePopups] = useState<ScorePopup[]>([]);
+  const [timer, setTimer] = useState(45);
   const [round, setRound] = useState(1);
+  const [bestRound, setBestRound] = useState(() => {
+    const saved = localStorage.getItem('shadowbox-best-round');
+    return saved ? parseInt(saved, 10) : 0;
+  });
+  const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
   const [shakeScreen, setShakeScreen] = useState(false);
   
   const timerRef = useRef<number | null>(null);
-  const timerAcceleration = useRef(0);
   const canvasSize = useRef({ width: 800, height: 600 });
+  const sounds = useSoundEffects();
 
-  const config = DIFFICULTIES[difficultyIndex].config;
-
-  const startGame = useCallback((difficulty: number) => {
-    setDifficultyIndex(difficulty);
-    const cfg = DIFFICULTIES[difficulty].config;
+  const startGame = useCallback(() => {
+    const config = getConfigForRound(1);
     
-    setHealth(cfg.maxHealth);
-    setMaxHealth(cfg.maxHealth);
+    setHealth(config.maxHealth);
+    setMaxHealth(config.maxHealth);
     setHearts(3);
-    setTimer(cfg.timerDuration);
-    setScore(0);
-    setCombo(0);
+    setTimer(config.timerDuration);
     setRound(1);
-    timerAcceleration.current = 0;
     
-    const newCircles = generateCircles(cfg, canvasSize.current.width, canvasSize.current.height);
+    const newCircles = generateCircles(config, canvasSize.current.width, canvasSize.current.height);
     setCircles(newCircles);
     setGameState('playing');
-  }, []);
+    sounds.playClick();
+  }, [sounds]);
 
   const nextRound = useCallback(() => {
-    const cfg = DIFFICULTIES[difficultyIndex].config;
-    const newCircles = generateCircles(cfg, canvasSize.current.width, canvasSize.current.height);
+    const newRound = round + 1;
+    const config = getConfigForRound(newRound);
+    
+    setRound(newRound);
+    setHealth(config.maxHealth);
+    setMaxHealth(config.maxHealth);
+    setTimer(config.timerDuration);
+    
+    const newCircles = generateCircles(config, canvasSize.current.width, canvasSize.current.height);
     setCircles(newCircles);
-    setRound(r => r + 1);
-  }, [difficultyIndex]);
+    sounds.playRoundComplete();
+  }, [round, sounds]);
+
+  const endGame = useCallback(() => {
+    setGameState('gameover');
+    sounds.playGameOver();
+    
+    // Save best round
+    if (round > bestRound) {
+      setBestRound(round);
+      localStorage.setItem('shadowbox-best-round', round.toString());
+    }
+  }, [round, bestRound, sounds]);
 
   const handleSelectionComplete = useCallback((box: SelectionBox) => {
     if (gameState !== 'playing') return;
     
-    const cfg = DIFFICULTIES[difficultyIndex].config;
     let capturedGood = 0;
     let capturedBad = 0;
-    const newPopups: ScorePopup[] = [];
     
     const updatedCircles = circles.map(circle => {
       if (isCircleInBox(circle, box)) {
@@ -176,64 +190,32 @@ export function useGameLogic() {
     
     setCircles(updatedCircles);
     
-    // Calculate center of selection for popup
-    const centerX = (box.x1 + box.x2) / 2;
-    const centerY = (box.y1 + box.y2) / 2;
-    
     if (capturedBad > 0) {
       // Hit bad circles - lose health
       const damage = capturedBad;
-      setHealth(h => Math.max(0, h - damage));
-      setCombo(0);
+      const newHealth = Math.max(0, health - damage);
+      setHealth(newHealth);
       setShakeScreen(true);
       setTimeout(() => setShakeScreen(false), 300);
+      sounds.playError();
       
-      newPopups.push({
-        id: `popup-${Date.now()}`,
-        x: centerX,
-        y: centerY,
-        value: -damage,
-        type: 'error',
-      });
+      if (newHealth <= 0) {
+        endGame();
+        return;
+      }
+    } else if (capturedGood > 0) {
+      sounds.playSuccess();
     }
-    
-    if (capturedGood > 0 && capturedBad === 0) {
-      // Perfect selection
-      const comboMultiplier = 1 + combo * 0.1;
-      const points = Math.floor(100 * capturedGood * comboMultiplier);
-      setScore(s => s + points);
-      setCombo(c => c + 1);
-      
-      newPopups.push({
-        id: `popup-${Date.now()}`,
-        x: centerX,
-        y: centerY,
-        value: points,
-        type: 'success',
-      });
-    }
-    
-    setScorePopups(prev => [...prev, ...newPopups]);
-    setTimeout(() => {
-      setScorePopups(prev => prev.filter(p => !newPopups.find(np => np.id === p.id)));
-    }, 800);
-    
-    // Increase timer acceleration
-    timerAcceleration.current += cfg.timerAcceleration;
     
     // Check if all good circles captured
     const remainingGood = updatedCircles.filter(c => c.type === 'good' && !c.captured).length;
     if (remainingGood === 0) {
-      // Victory bonus
-      const bonus = Math.floor(timer * 10);
-      setScore(s => s + bonus);
-      
       // Next round after delay
       setTimeout(() => {
         nextRound();
       }, 500);
     }
-  }, [circles, combo, difficultyIndex, gameState, nextRound, timer]);
+  }, [circles, health, gameState, nextRound, endGame, sounds]);
 
   const updateCanvasSize = useCallback((width: number, height: number) => {
     canvasSize.current = { width, height };
@@ -250,22 +232,23 @@ export function useGameLogic() {
 
     timerRef.current = window.setInterval(() => {
       setTimer(prev => {
-        const decrease = 1 + timerAcceleration.current;
-        const newTimer = prev - decrease;
+        const newTimer = prev - 1;
         
         if (newTimer <= 0) {
           setHearts(h => {
             if (h <= 1) {
-              setGameState('gameover');
+              endGame();
               return 0;
             }
-            setTimer(DIFFICULTIES[difficultyIndex].config.timerDuration);
+            const config = getConfigForRound(round);
+            setTimer(config.timerDuration);
+            sounds.playError();
             return h - 1;
           });
-          return DIFFICULTIES[difficultyIndex].config.timerDuration;
+          return getConfigForRound(round).timerDuration;
         }
         
-        return Math.max(0, newTimer);
+        return newTimer;
       });
     }, 1000);
 
@@ -274,34 +257,23 @@ export function useGameLogic() {
         clearInterval(timerRef.current);
       }
     };
-  }, [gameState, difficultyIndex]);
-
-  // Health check
-  useEffect(() => {
-    if (health <= 0 && gameState === 'playing') {
-      setGameState('gameover');
-    }
-  }, [health, gameState]);
+  }, [gameState, round, endGame, sounds]);
 
   return {
     gameState,
     setGameState,
-    difficultyIndex,
     circles,
     health,
     maxHealth,
     hearts,
     timer,
-    score,
-    combo,
     round,
+    bestRound,
     selectionBox,
     setSelectionBox,
-    scorePopups,
     shakeScreen,
     startGame,
     handleSelectionComplete,
     updateCanvasSize,
-    config,
   };
 }

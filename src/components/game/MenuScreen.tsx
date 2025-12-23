@@ -1,11 +1,9 @@
-import { DIFFICULTIES } from '@/types/game';
-import { cn } from '@/lib/utils';
-
 interface MenuScreenProps {
-  onStartGame: (difficulty: number) => void;
+  onStartGame: () => void;
+  bestRound: number;
 }
 
-export function MenuScreen({ onStartGame }: MenuScreenProps) {
+export function MenuScreen({ onStartGame, bestRound }: MenuScreenProps) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-background">
       {/* Title */}
@@ -18,49 +16,39 @@ export function MenuScreen({ onStartGame }: MenuScreenProps) {
         </p>
       </div>
 
-      {/* Difficulty Selection */}
-      <div className="w-full max-w-md space-y-4">
-        <h2 className="font-display text-sm text-center text-foreground mb-6">
-          SELECT DIFFICULTY
-        </h2>
-
-        <div className="grid gap-3">
-          {DIFFICULTIES.map((diff, index) => (
-            <button
-              key={diff.name}
-              onClick={() => onStartGame(index)}
-              className={cn(
-                "game-button w-full flex items-center justify-between",
-                index === 0 && "bg-accent text-accent-foreground border-accent",
-                index === 1 && "bg-primary text-primary-foreground border-primary",
-                index === 2 && "bg-warning text-warning-foreground border-warning",
-                index === 3 && "bg-destructive text-destructive-foreground border-destructive"
-              )}
-            >
-              <span>{diff.label}</span>
-              <span className="font-game text-xs opacity-70">
-                {diff.config.yellowCount}Y / {diff.config.whiteCount}W
-              </span>
-            </button>
-          ))}
+      {/* Best Round */}
+      {bestRound > 0 && (
+        <div className="mb-8 text-center">
+          <span className="font-display text-xs text-muted-foreground">BEST ROUND</span>
+          <div className="font-display text-4xl text-primary text-shadow-glow">
+            {bestRound}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Play Button */}
+      <button
+        onClick={onStartGame}
+        className="game-button text-lg px-12 py-4 mb-12"
+      >
+        PLAY
+      </button>
 
       {/* Instructions */}
-      <div className="mt-12 max-w-md text-center space-y-4">
+      <div className="max-w-md text-center space-y-4">
         <h3 className="font-display text-xs text-muted-foreground">HOW TO PLAY</h3>
         <div className="font-game text-sm text-muted-foreground space-y-2">
           <p>
             <span className="text-primary">●</span> Click & drag to create a selection box
           </p>
           <p>
-            <span className="text-primary">●</span> Capture <span className="text-primary">yellow</span> circles (GOOD)
+            <span className="text-primary">●</span> Capture all <span className="text-primary">yellow</span> circles
           </p>
           <p>
-            <span className="text-secondary">●</span> Avoid <span className="text-secondary">white</span> circles (BAD)
+            <span className="text-secondary">●</span> Avoid <span className="text-secondary">white</span> circles
           </p>
           <p>
-            <span className="text-destructive">♥</span> Don't let your health or timer run out!
+            <span className="text-destructive">♥</span> Survive as many rounds as possible!
           </p>
         </div>
       </div>
