@@ -191,18 +191,19 @@ export function useGameLogic() {
     setCircles(updatedCircles);
     
     if (capturedBad > 0) {
-      // Hit bad circles - lose health
-      const damage = capturedBad;
-      const newHealth = Math.max(0, health - damage);
-      setHealth(newHealth);
+      // Hit bad circles - lose a heart
       setShakeScreen(true);
       setTimeout(() => setShakeScreen(false), 300);
       sounds.playError();
       
-      if (newHealth <= 0) {
-        endGame();
-        return;
-      }
+      setHearts(h => {
+        const newHearts = h - 1;
+        if (newHearts <= 0) {
+          endGame();
+        }
+        return newHearts;
+      });
+      return;
     } else if (capturedGood > 0) {
       sounds.playSuccess();
     }

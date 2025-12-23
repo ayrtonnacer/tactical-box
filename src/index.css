@@ -142,12 +142,12 @@
   }
 
   .heart-filled {
-    color: hsl(var(--destructive));
+    color: hsl(var(--foreground));
   }
 
   .heart-empty {
-    color: hsl(var(--muted-foreground));
-    opacity: 0.3;
+    color: hsl(var(--foreground));
+    opacity: 0.2;
   }
 
   .timer-urgent {

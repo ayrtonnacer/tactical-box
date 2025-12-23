@@ -33,13 +33,13 @@ export function GameHUD({ hearts, timer, round }: GameHUDProps) {
 
       {/* Center - Round */}
       <div className="text-center">
-        <div className="text-[10px] text-muted-foreground mb-1">ROUND</div>
-        <div className="text-2xl text-primary">{round}</div>
+        <div className="text-[10px] text-foreground/60 mb-1">ROUND</div>
+        <div className="text-2xl text-foreground">{round}</div>
       </div>
 
       {/* Right - Timer */}
       <div className={cn(
-        "text-lg tabular-nums",
+        "text-lg text-foreground tabular-nums",
         isLowTime && "timer-urgent"
       )}>
         {formatTime(timer)}
