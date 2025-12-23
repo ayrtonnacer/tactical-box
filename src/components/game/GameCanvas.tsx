@@ -101,7 +101,9 @@ export function GameCanvas({
         <div
           key={circle.id}
           className={cn(
-            "circle-base animate-pop-in",
+            "circle-base",
+            // Only animate pop-in on spawn; captured circles use the captured-out animation.
+            !circle.captured && "animate-pop-in",
             circle.captured && circle.type === 'bad' && "circle-captured-bad",
             circle.captured && circle.type === 'good' && "circle-captured-good",
             !circle.captured && circle.type === 'good' && "circle-good",
