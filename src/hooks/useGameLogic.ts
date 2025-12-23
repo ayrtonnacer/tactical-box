@@ -168,7 +168,7 @@ export function useGameLogic() {
     
     let capturedGood = 0;
     let capturedBad = 0;
-    
+
     const updatedCircles = circles.map(circle => {
       if (isCircleInBox(circle, box)) {
         if (circle.type === 'good') {
@@ -181,15 +181,21 @@ export function useGameLogic() {
       }
       return circle;
     });
-    
+
+    // Apply captured state immediately for visual feedback, then remove captured circles.
     setCircles(updatedCircles);
-    
+    if (capturedGood > 0 || capturedBad > 0) {
+      window.setTimeout(() => {
+        setCircles(curr => curr.filter(c => !c.captured));
+      }, 350);
+    }
+
     if (capturedBad > 0) {
       // Hit bad circles - lose a heart
       setShakeScreen(true);
       setTimeout(() => setShakeScreen(false), 300);
       sounds.playError();
-      
+
       setHearts(h => {
         const newHearts = h - 1;
         if (newHearts <= 0) {
@@ -201,7 +207,7 @@ export function useGameLogic() {
     } else if (capturedGood > 0) {
       sounds.playSuccess();
     }
-    
+
     // Check if all good circles captured
     const remainingGood = updatedCircles.filter(c => c.type === 'good' && !c.captured).length;
     if (remainingGood === 0) {
