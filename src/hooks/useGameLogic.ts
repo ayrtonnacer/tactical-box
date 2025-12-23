@@ -4,23 +4,39 @@ import { Circle, SelectionBox, ScorePopup, GameConfig, GameState, DIFFICULTIES }
 const CIRCLE_RADIUS = 20;
 const CIRCLE_SPACING = 50;
 
+// Define safe margins to avoid HUD elements
+const HUD_MARGINS = {
+  top: 120,     // Space for HP bar, round indicator, score, timer, hearts
+  left: 160,    // Space for HP bar and round indicator
+  right: 120,   // Space for timer and hearts
+  bottom: 60,   // Space for bottom hint text
+};
+
 function generateCircles(config: GameConfig, canvasWidth: number, canvasHeight: number): Circle[] {
   const circles: Circle[] = [];
-  const padding = CIRCLE_RADIUS * 2;
-  const availableWidth = canvasWidth - padding * 2;
-  const availableHeight = canvasHeight - padding * 2;
   
-  // Calculate grid dimensions
+  // Calculate playable area (excluding HUD zones)
+  const playableArea = {
+    left: HUD_MARGINS.left,
+    top: HUD_MARGINS.top,
+    right: canvasWidth - HUD_MARGINS.right,
+    bottom: canvasHeight - HUD_MARGINS.bottom,
+  };
+  
+  const availableWidth = playableArea.right - playableArea.left - CIRCLE_RADIUS * 2;
+  const availableHeight = playableArea.bottom - playableArea.top - CIRCLE_RADIUS * 2;
+  
+  // Calculate grid dimensions within playable area
   const cols = Math.floor(availableWidth / CIRCLE_SPACING);
   const rows = Math.floor(availableHeight / CIRCLE_SPACING);
   
-  // Create all possible positions
+  // Create all possible positions within playable area
   const positions: { x: number; y: number }[] = [];
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
       positions.push({
-        x: padding + col * CIRCLE_SPACING + CIRCLE_SPACING / 2,
-        y: padding + row * CIRCLE_SPACING + CIRCLE_SPACING / 2,
+        x: playableArea.left + CIRCLE_RADIUS + col * CIRCLE_SPACING + CIRCLE_SPACING / 2,
+        y: playableArea.top + CIRCLE_RADIUS + row * CIRCLE_SPACING + CIRCLE_SPACING / 2,
       });
     }
   }
