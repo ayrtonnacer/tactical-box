@@ -95,7 +95,7 @@
   }
 
   .circle-base {
-    @apply absolute rounded-full;
+    @apply absolute rounded-full flex items-center justify-center;
   }
 
   /* Good circles - solid white */
@@ -109,9 +109,16 @@
     border: 3px solid hsl(var(--circle-bad));
   }
 
-  .circle-captured {
-    background: hsl(var(--circle-captured));
-    border: none;
+  /* Captured bad - show X */
+  .circle-captured-bad {
+    background: transparent;
+    border: 3px solid hsl(var(--foreground));
+  }
+
+  /* Captured good - dimmed */
+  .circle-captured-good {
+    background: hsl(var(--circle-good));
+    opacity: 0.3;
   }
 
   .selection-box {

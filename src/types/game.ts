@@ -18,29 +18,20 @@ export interface GameConfig {
   yellowCount: number;
   whiteCount: number;
   timerDuration: number;
-  maxHealth: number;
 }
 
 export type GameState = 'menu' | 'playing' | 'gameover';
 
-// Progressive difficulty based on round number
+// More aggressive difficulty scaling
 export function getConfigForRound(round: number): GameConfig {
-  // Base values
-  const baseYellow = 3;
-  const baseWhite = 2;
-  const baseTimer = 45;
-  const baseHealth = 5;
-
-  // Progressive scaling
-  const yellowCount = Math.min(baseYellow + Math.floor((round - 1) / 2), 12);
-  const whiteCount = Math.min(baseWhite + Math.floor((round - 1) / 2), 10);
-  const timerDuration = Math.max(baseTimer - (round - 1) * 2, 15);
-  const maxHealth = Math.max(baseHealth - Math.floor((round - 1) / 3), 2);
+  // Start easy, ramp up fast
+  const yellowCount = Math.min(2 + round, 15);
+  const whiteCount = Math.min(1 + Math.floor(round * 0.8), 12);
+  const timerDuration = Math.max(40 - (round - 1) * 3, 10);
 
   return {
     yellowCount,
     whiteCount,
     timerDuration,
-    maxHealth,
   };
 }

@@ -113,13 +113,11 @@ function isCircleInBox(circle: Circle, box: SelectionBox): boolean {
 export function useGameLogic() {
   const [gameState, setGameState] = useState<GameState>('menu');
   const [circles, setCircles] = useState<Circle[]>([]);
-  const [health, setHealth] = useState(5);
-  const [maxHealth, setMaxHealth] = useState(5);
   const [hearts, setHearts] = useState(3);
   const [timer, setTimer] = useState(45);
   const [round, setRound] = useState(1);
   const [bestRound, setBestRound] = useState(() => {
-    const saved = localStorage.getItem('shadowbox-best-round');
+    const saved = localStorage.getItem('rts-trainer-best-round');
     return saved ? parseInt(saved, 10) : 0;
   });
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
@@ -132,8 +130,6 @@ export function useGameLogic() {
   const startGame = useCallback(() => {
     const config = getConfigForRound(1);
     
-    setHealth(config.maxHealth);
-    setMaxHealth(config.maxHealth);
     setHearts(3);
     setTimer(config.timerDuration);
     setRound(1);
@@ -149,8 +145,6 @@ export function useGameLogic() {
     const config = getConfigForRound(newRound);
     
     setRound(newRound);
-    setHealth(config.maxHealth);
-    setMaxHealth(config.maxHealth);
     setTimer(config.timerDuration);
     
     const newCircles = generateCircles(config, canvasSize.current.width, canvasSize.current.height);
@@ -216,7 +210,7 @@ export function useGameLogic() {
         nextRound();
       }, 500);
     }
-  }, [circles, health, gameState, nextRound, endGame, sounds]);
+  }, [circles, gameState, nextRound, endGame, sounds]);
 
   const updateCanvasSize = useCallback((width: number, height: number) => {
     canvasSize.current = { width, height };
@@ -264,8 +258,6 @@ export function useGameLogic() {
     gameState,
     setGameState,
     circles,
-    health,
-    maxHealth,
     hearts,
     timer,
     round,

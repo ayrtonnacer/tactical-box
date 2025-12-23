@@ -9,10 +9,10 @@ export function MenuScreen({ onStartGame, bestRound }: MenuScreenProps) {
       {/* Title */}
       <div className="mb-16 text-center">
         <h1 className="text-2xl md:text-3xl text-foreground mb-6">
-          SHADOWBOX
+          RTS TRAINER
         </h1>
         <p className="text-[10px] text-foreground/60 tracking-widest">
-          RTS TRAINER
+          BOX SELECTION
         </p>
       </div>
 

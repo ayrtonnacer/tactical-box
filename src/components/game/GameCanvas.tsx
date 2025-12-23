@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Circle, SelectionBox } from '@/types/game';
+import { X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface GameCanvasProps {
@@ -101,8 +102,8 @@ export function GameCanvas({
           key={circle.id}
           className={cn(
             "circle-base animate-pop-in",
-            circle.captured && circle.type === 'bad' && "circle-captured",
-            circle.captured && circle.type === 'good' && "opacity-50",
+            circle.captured && circle.type === 'bad' && "circle-captured-bad",
+            circle.captured && circle.type === 'good' && "circle-captured-good",
             !circle.captured && circle.type === 'good' && "circle-good",
             !circle.captured && circle.type === 'bad' && "circle-bad"
           )}
@@ -112,7 +113,12 @@ export function GameCanvas({
             width: circle.radius * 2,
             height: circle.radius * 2,
           }}
-        />
+        >
+          {/* Show X on captured bad circles */}
+          {circle.captured && circle.type === 'bad' && (
+            <X className="w-4 h-4 text-foreground" strokeWidth={3} />
+          )}
+        </div>
       ))}
 
       {/* Selection Box */}

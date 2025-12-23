@@ -1,3 +1,6 @@
+import { Share2 } from 'lucide-react';
+import { toast } from 'sonner';
+
 interface GameOverScreenProps {
   round: number;
   bestRound: number;
@@ -13,6 +16,31 @@ export function GameOverScreen({
 }: GameOverScreenProps) {
   const isNewBest = round >= bestRound;
 
+  const handleShare = async () => {
+    const shareText = `I reached Round ${round} in RTS Trainer! Can you beat my score?`;
+    const shareUrl = window.location.href;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'RTS Trainer',
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        // User cancelled or error
+        copyToClipboard(shareText);
+      }
+    } else {
+      copyToClipboard(shareText);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text + ' ' + window.location.href);
+    toast('Copied to clipboard!');
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-background">
       <div className="text-center">
@@ -26,7 +54,7 @@ export function GameOverScreen({
           <div className="text-[10px] text-foreground/60 mb-2">ROUND</div>
           <div className="text-5xl text-foreground">{round}</div>
           {isNewBest && (
-            <div className="text-[10px] text-foreground/80 mt-4">★ NEW BEST ★</div>
+            <div className="text-[10px] text-foreground/80 mt-4">* NEW BEST *</div>
           )}
         </div>
 
@@ -42,6 +70,15 @@ export function GameOverScreen({
           <button onClick={onRetry} className="game-button">
             RETRY
           </button>
+          
+          <button 
+            onClick={handleShare} 
+            className="game-button-secondary px-8 py-4 text-xs flex items-center justify-center gap-2"
+          >
+            <Share2 className="w-4 h-4" />
+            SHARE
+          </button>
+          
           <button onClick={onMenu} className="game-button-secondary px-8 py-4 text-xs">
             MENU
           </button>
