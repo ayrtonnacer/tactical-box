@@ -9,8 +9,6 @@ export function ShadowBoxGame() {
     gameState,
     setGameState,
     circles,
-    health,
-    maxHealth,
     hearts,
     timer,
     round,
@@ -41,8 +39,6 @@ export function ShadowBoxGame() {
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-background">
       <GameHUD
-        health={health}
-        maxHealth={maxHealth}
         hearts={hearts}
         timer={timer}
         round={round}
@@ -56,13 +52,6 @@ export function ShadowBoxGame() {
         shakeScreen={shakeScreen}
         onResize={updateCanvasSize}
       />
-
-      {/* Hint */}
-      <div className="absolute bottom-4 left-4 pointer-events-none">
-        <span className="font-game text-xs text-muted-foreground/50">
-          Select all yellow circles
-        </span>
-      </div>
     </div>
   );
 }
