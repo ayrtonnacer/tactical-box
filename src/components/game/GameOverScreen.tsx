@@ -17,13 +17,13 @@ export function GameOverScreen({
   const isNewBest = round >= bestRound;
 
   const handleShare = async () => {
-    const shareText = `I reached Round ${round} in RTS Trainer! Can you beat my score?`;
+    const shareText = `I reached Round ${round} in RTS Trainer! Train your unit selection precision for RTS games.`;
     const shareUrl = window.location.href;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'RTS Trainer',
+          title: 'RTS Trainer - Unit Selection Precision',
           text: shareText,
           url: shareUrl,
         });
