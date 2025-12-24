@@ -1,4 +1,4 @@
-import { Coffee, Globe } from 'lucide-react';
+import { Coffee } from 'lucide-react';
 
 interface MenuScreenProps {
   onStartGame: () => void;
@@ -43,28 +43,25 @@ export function MenuScreen({ onStartGame, bestRound }: MenuScreenProps) {
       {/* Credits */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
         <p className="text-[10px] text-foreground/50 mb-3">
-          Project by <span className="text-foreground/70">@ayrtonnacer</span>
-        </p>
-        <div className="flex items-center justify-center gap-4">
-          <a
-            href="https://cafecito.app/ayrtonnacer"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-[10px] text-foreground/50 hover:text-foreground/80 transition-colors"
-          >
-            <Coffee className="w-3 h-3" />
-            Invitame un cafecito
-          </a>
+          Project by{' '}
           <a
             href="https://ayrtonnacer.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-[10px] text-foreground/50 hover:text-foreground/80 transition-colors"
+            className="text-foreground/70 hover:text-foreground/90 transition-colors"
           >
-            <Globe className="w-3 h-3" />
-            Website
+            @ayrtonnacer
           </a>
-        </div>
+        </p>
+        <a
+          href="https://cafecito.app/ayrtonnacer"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-1.5 text-[10px] text-foreground/50 hover:text-foreground/80 transition-colors"
+        >
+          <Coffee className="w-3 h-3" />
+          Invitame un cafecito
+        </a>
       </div>
     </div>
   );
