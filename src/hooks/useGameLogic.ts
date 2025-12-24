@@ -182,10 +182,9 @@ export function useGameLogic() {
     }
   }, [bestRound, sounds, clearRespawnTimer]);
 
-  // Keep endGame ref in sync
-  useEffect(() => {
-    endGameRef.current = endGame;
-  }, [endGame]);
+  // Keep endGame ref updated (avoid extra hook to prevent hook-order issues)
+  endGameRef.current = endGame;
+
 
   const nextRound = useCallback(() => {
     const newRound = roundRef.current + 1;
