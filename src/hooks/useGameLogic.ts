@@ -25,7 +25,6 @@ function getConfigForRound(round: number): { yellowCount: number; whiteCount: nu
 function generateCircles(yellowCount: number, whiteCount: number, canvasWidth: number, canvasHeight: number): Circle[] {
   const circles: Circle[] = [];
   
-  // Calculate playable area (excluding HUD zones)
   const playableArea = {
     left: HUD_MARGINS.left,
     top: HUD_MARGINS.top,
@@ -36,11 +35,9 @@ function generateCircles(yellowCount: number, whiteCount: number, canvasWidth: n
   const availableWidth = playableArea.right - playableArea.left - CIRCLE_RADIUS * 2;
   const availableHeight = playableArea.bottom - playableArea.top - CIRCLE_RADIUS * 2;
   
-  // Calculate grid dimensions within playable area
   const cols = Math.floor(availableWidth / CIRCLE_SPACING);
   const rows = Math.floor(availableHeight / CIRCLE_SPACING);
   
-  // Create all possible positions within playable area
   const positions: { x: number; y: number }[] = [];
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
@@ -51,30 +48,25 @@ function generateCircles(yellowCount: number, whiteCount: number, canvasWidth: n
     }
   }
   
-  // Shuffle positions
   for (let i = positions.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [positions[i], positions[j]] = [positions[j], positions[i]];
   }
   
-  // Pick a cluster center for yellow circles
   const totalCircles = yellowCount + whiteCount;
   const usedPositions = positions.slice(0, Math.min(totalCircles * 3, positions.length));
   
   if (usedPositions.length === 0) return circles;
   
-  // Pick center for yellow cluster
   const clusterCenterIdx = Math.floor(Math.random() * usedPositions.length);
   const clusterCenter = usedPositions[clusterCenterIdx];
   
-  // Sort positions by distance to cluster center
   const sortedByDistance = [...usedPositions].sort((a, b) => {
     const distA = Math.sqrt((a.x - clusterCenter.x) ** 2 + (a.y - clusterCenter.y) ** 2);
     const distB = Math.sqrt((b.x - clusterCenter.x) ** 2 + (b.y - clusterCenter.y) ** 2);
     return distA - distB;
   });
   
-  // Place yellow circles in cluster
   for (let i = 0; i < yellowCount && i < sortedByDistance.length; i++) {
     circles.push({
       id: `good-${i}`,
@@ -86,7 +78,6 @@ function generateCircles(yellowCount: number, whiteCount: number, canvasWidth: n
     });
   }
   
-  // Place white circles around (not in cluster)
   const remainingPositions = sortedByDistance.slice(yellowCount);
   for (let i = 0; i < whiteCount && i < remainingPositions.length; i++) {
     circles.push({
@@ -109,7 +100,6 @@ function isCircleInBox(circle: Circle, box: SelectionBox): boolean {
   const minY = Math.min(box.y1, box.y2);
   const maxY = Math.max(box.y1, box.y2);
   
-  // Check if circle center is within box (with small tolerance)
   const tolerance = radius * 0.3;
   return (
     x - tolerance >= minX &&
@@ -135,9 +125,19 @@ export function useGameLogic() {
   const timerRef = useRef<number | null>(null);
   const respawnTimerRef = useRef<number | null>(null);
   const canvasSize = useRef({ width: 800, height: 600 });
+  const roundRef = useRef(1);
+  const gameStateRef = useRef<GameState>('menu');
   const sounds = useSoundEffects();
 
-  // Clear respawn timer
+  // Keep refs in sync
+  useEffect(() => {
+    roundRef.current = round;
+  }, [round]);
+
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
+
   const clearRespawnTimer = useCallback(() => {
     if (respawnTimerRef.current) {
       clearTimeout(respawnTimerRef.current);
@@ -145,26 +145,8 @@ export function useGameLogic() {
     }
   }, []);
 
-  // Start respawn timer - if 3s pass without completing, spawn new circles
-  const startRespawnTimer = useCallback((currentRound: number) => {
-    clearRespawnTimer();
-    
-    respawnTimerRef.current = window.setTimeout(() => {
-      const config = getConfigForRound(currentRound);
-      const newCircles = generateCircles(
-        config.yellowCount, 
-        config.whiteCount, 
-        canvasSize.current.width, 
-        canvasSize.current.height
-      );
-      setCircles(newCircles);
-      // Restart the timer for the new set
-      startRespawnTimer(currentRound);
-    }, RESPAWN_DELAY);
-  }, [clearRespawnTimer]);
-
-  const spawnCirclesForRound = useCallback((roundNum: number) => {
-    const config = getConfigForRound(roundNum);
+  const spawnNewCircles = useCallback(() => {
+    const config = getConfigForRound(roundRef.current);
     const newCircles = generateCircles(
       config.yellowCount, 
       config.whiteCount, 
@@ -172,106 +154,122 @@ export function useGameLogic() {
       canvasSize.current.height
     );
     setCircles(newCircles);
-    startRespawnTimer(roundNum);
-  }, [startRespawnTimer]);
+  }, []);
 
-  const startGame = useCallback(() => {
-    setHearts(3);
-    setTimer(GAME_DURATION);
-    setRound(1);
-    setGameState('playing');
-    spawnCirclesForRound(1);
-    sounds.playClick();
-  }, [sounds, spawnCirclesForRound]);
-
-  const nextRound = useCallback(() => {
-    const newRound = round + 1;
-    setRound(newRound);
-    spawnCirclesForRound(newRound);
-    sounds.playRoundComplete();
-  }, [round, sounds, spawnCirclesForRound]);
+  const startRespawnTimer = useCallback(() => {
+    clearRespawnTimer();
+    
+    if (gameStateRef.current !== 'playing') return;
+    
+    respawnTimerRef.current = window.setTimeout(() => {
+      if (gameStateRef.current === 'playing') {
+        spawnNewCircles();
+        startRespawnTimer();
+      }
+    }, RESPAWN_DELAY);
+  }, [clearRespawnTimer, spawnNewCircles]);
 
   const endGame = useCallback(() => {
     clearRespawnTimer();
     setGameState('gameover');
     sounds.playGameOver();
     
-    // Save best round
-    if (round > bestRound) {
-      setBestRound(round);
-      localStorage.setItem('shadowbox-best-round', round.toString());
+    if (roundRef.current > bestRound) {
+      setBestRound(roundRef.current);
+      localStorage.setItem('shadowbox-best-round', roundRef.current.toString());
     }
-  }, [round, bestRound, sounds, clearRespawnTimer]);
+  }, [bestRound, sounds, clearRespawnTimer]);
+
+  const nextRound = useCallback(() => {
+    const newRound = roundRef.current + 1;
+    setRound(newRound);
+    roundRef.current = newRound;
+    spawnNewCircles();
+    startRespawnTimer();
+    sounds.playRoundComplete();
+  }, [sounds, spawnNewCircles, startRespawnTimer]);
+
+  const startGame = useCallback(() => {
+    setHearts(3);
+    setTimer(GAME_DURATION);
+    setRound(1);
+    roundRef.current = 1;
+    setGameState('playing');
+    gameStateRef.current = 'playing';
+    spawnNewCircles();
+    startRespawnTimer();
+    sounds.playClick();
+  }, [sounds, spawnNewCircles, startRespawnTimer]);
 
   const handleSelectionComplete = useCallback((box: SelectionBox) => {
-    if (gameState !== 'playing') return;
+    if (gameStateRef.current !== 'playing') return;
     
     let capturedGood = 0;
     let capturedBad = 0;
 
-    const updatedCircles = circles.map(circle => {
-      if (isCircleInBox(circle, box)) {
-        if (circle.type === 'good') {
-          capturedGood++;
-          return { ...circle, captured: true };
+    setCircles(currentCircles => {
+      const updatedCircles = currentCircles.map(circle => {
+        if (isCircleInBox(circle, box)) {
+          if (circle.type === 'good') {
+            capturedGood++;
+            return { ...circle, captured: true };
+          } else {
+            capturedBad++;
+            return { ...circle, captured: true };
+          }
+        }
+        return circle;
+      });
+
+      // Schedule removal of captured circles
+      if (capturedGood > 0 || capturedBad > 0) {
+        window.setTimeout(() => {
+          setCircles(curr => curr.filter(c => !c.captured));
+        }, 350);
+      }
+
+      // Handle bad circle capture
+      if (capturedBad > 0) {
+        setShakeScreen(true);
+        setTimeout(() => setShakeScreen(false), 300);
+        sounds.playError();
+
+        setHearts(h => {
+          const newHearts = h - 1;
+          if (newHearts <= 0) {
+            endGame();
+          }
+          return newHearts;
+        });
+      }
+      
+      // Check round completion
+      if (capturedGood > 0) {
+        if (capturedBad === 0) {
+          sounds.playSuccess();
+        }
+        
+        const remainingGood = updatedCircles.filter(c => c.type === 'good' && !c.captured).length;
+        if (remainingGood === 0) {
+          clearRespawnTimer();
+          setTimeout(() => {
+            nextRound();
+          }, 500);
         } else {
-          capturedBad++;
-          return { ...circle, captured: true };
+          // Reset respawn timer since player made progress
+          startRespawnTimer();
         }
       }
-      return circle;
+
+      return updatedCircles;
     });
-
-    // Apply captured state immediately for visual feedback
-    setCircles(updatedCircles);
-    
-    if (capturedGood > 0 || capturedBad > 0) {
-      window.setTimeout(() => {
-        setCircles(curr => curr.filter(c => !c.captured));
-      }, 350);
-    }
-
-    // Handle bad circle capture - lose a heart
-    if (capturedBad > 0) {
-      setShakeScreen(true);
-      setTimeout(() => setShakeScreen(false), 300);
-      sounds.playError();
-
-      const newHearts = hearts - 1;
-      setHearts(newHearts);
-      
-      if (newHearts <= 0) {
-        endGame();
-        return;
-      }
-    }
-    
-    // If we captured good circles (even with bad), check for round completion
-    if (capturedGood > 0) {
-      if (capturedBad === 0) {
-        sounds.playSuccess();
-      }
-      
-      // Check if all good circles captured
-      const remainingGood = updatedCircles.filter(c => c.type === 'good' && !c.captured).length;
-      if (remainingGood === 0) {
-        clearRespawnTimer();
-        // Next round after delay
-        setTimeout(() => {
-          nextRound();
-        }, 500);
-      } else {
-        // Reset respawn timer since player made progress
-        startRespawnTimer(round);
-      }
-    }
-  }, [circles, gameState, hearts, round, nextRound, endGame, sounds, clearRespawnTimer, startRespawnTimer]);
+  }, [sounds, endGame, nextRound, clearRespawnTimer, startRespawnTimer]);
 
   const updateCanvasSize = useCallback((width: number, height: number) => {
     canvasSize.current = { width, height };
   }, []);
 
-  // Global timer effect - counts down from 60 to 0
+  // Global timer effect
   useEffect(() => {
     if (gameState !== 'playing') {
       if (timerRef.current) {
@@ -283,12 +281,10 @@ export function useGameLogic() {
     timerRef.current = window.setInterval(() => {
       setTimer(prev => {
         const newTimer = prev - 1;
-        
         if (newTimer <= 0) {
           endGame();
           return 0;
         }
-        
         return newTimer;
       });
     }, 1000);
