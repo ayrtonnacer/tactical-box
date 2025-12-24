@@ -127,6 +127,7 @@ export function useGameLogic() {
   const canvasSize = useRef({ width: 800, height: 600 });
   const roundRef = useRef(1);
   const gameStateRef = useRef<GameState>('menu');
+  const endGameRef = useRef<() => void>(() => {});
   const sounds = useSoundEffects();
 
   // Keep refs in sync
@@ -172,6 +173,7 @@ export function useGameLogic() {
   const endGame = useCallback(() => {
     clearRespawnTimer();
     setGameState('gameover');
+    gameStateRef.current = 'gameover';
     sounds.playGameOver();
     
     if (roundRef.current > bestRound) {
@@ -179,6 +181,11 @@ export function useGameLogic() {
       localStorage.setItem('shadowbox-best-round', roundRef.current.toString());
     }
   }, [bestRound, sounds, clearRespawnTimer]);
+
+  // Keep endGame ref in sync
+  useEffect(() => {
+    endGameRef.current = endGame;
+  }, [endGame]);
 
   const nextRound = useCallback(() => {
     const newRound = roundRef.current + 1;
@@ -269,20 +276,32 @@ export function useGameLogic() {
     canvasSize.current = { width, height };
   }, []);
 
-  // Global timer effect
+  // Global timer effect - completely independent, uses refs to avoid recreating
   useEffect(() => {
     if (gameState !== 'playing') {
       if (timerRef.current) {
         clearInterval(timerRef.current);
+        timerRef.current = null;
       }
       return;
     }
 
+    // Only create interval if not already running
+    if (timerRef.current) return;
+
     timerRef.current = window.setInterval(() => {
+      if (gameStateRef.current !== 'playing') {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+        return;
+      }
+      
       setTimer(prev => {
         const newTimer = prev - 1;
         if (newTimer <= 0) {
-          endGame();
+          endGameRef.current();
           return 0;
         }
         return newTimer;
@@ -292,9 +311,10 @@ export function useGameLogic() {
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
+        timerRef.current = null;
       }
     };
-  }, [gameState, endGame]);
+  }, [gameState]);
 
   // Cleanup on unmount
   useEffect(() => {
