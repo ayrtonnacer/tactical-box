@@ -44,16 +44,14 @@ export function ShadowBoxGame() {
         round={round}
       />
       
-      <div className="isometric-wrapper pt-16">
-        <GameCanvas
-          circles={circles}
-          selectionBox={selectionBox}
-          setSelectionBox={setSelectionBox}
-          onSelectionComplete={handleSelectionComplete}
-          shakeScreen={shakeScreen}
-          onResize={updateCanvasSize}
-        />
-      </div>
+      <GameCanvas
+        circles={circles}
+        selectionBox={selectionBox}
+        setSelectionBox={setSelectionBox}
+        onSelectionComplete={handleSelectionComplete}
+        shakeScreen={shakeScreen}
+        onResize={updateCanvasSize}
+      />
     </div>
   );
 }

@@ -89,21 +89,9 @@
 }
 
 @layer components {
-  /* Isometric container wrapper */
-  .isometric-wrapper {
-    @apply w-full h-full flex items-center justify-center overflow-hidden;
-    background: hsl(var(--game-bg));
-    perspective: 1000px;
-  }
-
   .game-canvas {
-    @apply relative select-none;
+    @apply relative overflow-hidden select-none;
     background: hsl(var(--game-bg));
-    transform: rotateX(55deg) rotateZ(45deg);
-    transform-style: preserve-3d;
-    box-shadow: 
-      10px 10px 0 hsl(var(--game-bg) / 0.5),
-      20px 20px 0 hsl(var(--game-bg) / 0.3);
   }
 
   .circle-base {
