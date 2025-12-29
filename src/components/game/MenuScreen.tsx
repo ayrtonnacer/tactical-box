@@ -10,7 +10,7 @@ export function MenuScreen({ onStartGame, bestRound }: MenuScreenProps) {
     <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-background relative">
       {/* Title */}
       <div className="mb-12 text-center">
-        <h1 className="text-6xl md:text-8xl font-bold text-foreground mb-8 font-display tracking-tight">
+        <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6 font-display">
           RTS TRAINER
         </h1>
         <p className="text-xs md:text-sm text-foreground/70 max-w-xs font-display tracking-widest">

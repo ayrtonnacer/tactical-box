@@ -1,4 +1,4 @@
-import { Share2 } from 'lucide-react';
+import { Copy } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface GameOverScreenProps {
@@ -13,7 +13,7 @@ export function GameOverScreen({
   onRetry,
   onMenu,
 }: GameOverScreenProps) {
-  const handleShare = async () => {
+  const handleShare = () => {
     const now = new Date();
     const dateStr = now.toLocaleDateString('en-US', { 
       month: 'short', 
@@ -23,23 +23,8 @@ export function GameOverScreen({
     
     const shareText = `I reached Round ${round} in RTS Trainer on ${dateStr}! Can you beat my score? https://ayrtonnacer.github.io/rts-trainer/`;
     
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'RTS Trainer',
-          text: shareText,
-        });
-      } catch (err) {
-        copyToClipboard(shareText);
-      }
-    } else {
-      copyToClipboard(shareText);
-    }
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success('Copied to clipboard! Share with friends.');
+    navigator.clipboard.writeText(shareText);
+    toast.success('Copied to clipboard!');
   };
 
   return (
@@ -66,8 +51,8 @@ export function GameOverScreen({
             onClick={handleShare}
             className="game-button px-8 py-4 text-sm md:text-base font-display flex items-center justify-center gap-2 font-bold"
           >
-            <Share2 className="w-5 h-5" />
-            SHARE WITH FRIENDS
+            <Copy className="w-5 h-5" />
+            COPY SCORE
           </button>
           
           <button 
