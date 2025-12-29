@@ -52,7 +52,7 @@ export function GameOverScreen({
             className="game-button px-8 py-4 text-sm md:text-base font-display flex items-center justify-center gap-2 font-bold"
           >
             <Copy className="w-5 h-5" />
-            COPY SCORE
+            SHARE WITH FRIENDS
           </button>
           
           <button 
