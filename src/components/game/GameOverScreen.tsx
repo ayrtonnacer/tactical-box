@@ -3,82 +3,124 @@ import { toast } from 'sonner';
 
 interface GameOverScreenProps {
   round: number;
-  bestRound: number;
   onRetry: () => void;
   onMenu: () => void;
 }
 
 export function GameOverScreen({
   round,
-  bestRound,
   onRetry,
   onMenu,
 }: GameOverScreenProps) {
   const handleShare = async () => {
-    const shareText = `I reached Round ${round} in RTS Trainer! Can you beat my score?`;
-    const shareUrl = window.location.href;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: '2-digit',
+      year: 'numeric'
+    });
+    
+    const shareText = `I reached Round ${round} in RTS Trainer on ${dateStr}! Can you beat my score? https://ayrtonnacer.github.io/rts-trainer/`;
     
     if (navigator.share) {
       try {
         await navigator.share({
           title: 'RTS Trainer',
           text: shareText,
-          url: shareUrl,
         });
       } catch (err) {
-        copyToClipboard(shareText, shareUrl);
+        copyToClipboard(shareText);
       }
     } else {
-      copyToClipboard(shareText, shareUrl);
+      copyToClipboard(shareText);
     }
   };
 
-  const copyToClipboard = (text: string, url: string) => {
-    const fullText = `${text}\n${url}`;
-    navigator.clipboard.writeText(fullText);
-    toast('Copied to clipboard! Share with friends.');
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard! Share with friends.');
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-background">
+    <div className="min-h-screen flex flex-col items-center justify-center p-8" style={{ backgroundColor: '#001a66' }}>
       <div className="text-center w-full max-w-md">
         {/* Game Over */}
-        <div className="text-xl text-foreground mb-8">GAME OVER</div>
+        <div className="text-4xl font-bold mb-8" style={{ color: '#ffffff', fontFamily: 'monospace', letterSpacing: '3px' }}>
+          GAME OVER
+        </div>
         
         {/* Round Reached */}
-        <div className="mb-6">
-          <div className="text-[10px] text-foreground/60 mb-2">ROUND REACHED</div>
-          <div className="text-5xl text-foreground font-bold">{round}</div>
-        </div>
-
-        {/* Best Round */}
-        {bestRound > 0 && (
-          <div className="mb-8 text-sm text-foreground/70">
-            <span>Best Round: </span>
-            <span className="font-semibold">{bestRound}</span>
+        <div className="mb-8">
+          <div className="text-sm mb-4" style={{ color: '#ffffff', fontFamily: 'monospace', letterSpacing: '2px', opacity: 0.8 }}>
+            ROUND REACHED
           </div>
-        )}
+          <div className="text-8xl font-bold" style={{ color: '#ffffff', fontFamily: 'monospace' }}>
+            {round}
+          </div>
+        </div>
 
         {/* Actions */}
         <div className="flex flex-col gap-4 mt-12">
           <button 
             onClick={handleShare} 
-            className="game-button px-8 py-4 text-sm flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded"
+            className="px-8 py-4 text-lg font-bold transition-all duration-200"
+            style={{ 
+              backgroundColor: '#ffffff', 
+              color: '#001a66',
+              border: '2px solid #ffffff',
+              fontFamily: 'monospace',
+              letterSpacing: '2px',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#f0f0f0';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#ffffff';
+            }}
           >
-            <Share2 className="w-5 h-5" />
+            <Share2 className="inline w-5 h-5 mr-2" />
             SHARE WITH FRIENDS
           </button>
           
           <button 
             onClick={onRetry} 
-            className="game-button px-8 py-4 text-sm bg-white text-blue-600 font-bold rounded hover:bg-gray-100"
+            className="px-8 py-4 text-lg font-bold transition-all duration-200"
+            style={{ 
+              backgroundColor: '#ffffff', 
+              color: '#001a66',
+              border: '2px solid #ffffff',
+              fontFamily: 'monospace',
+              letterSpacing: '2px',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#f0f0f0';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#ffffff';
+            }}
           >
             RETRY
           </button>
           
           <button 
             onClick={onMenu} 
-            className="game-button-secondary px-8 py-4 text-sm bg-gray-700 text-white font-bold rounded hover:bg-gray-600"
+            className="px-8 py-4 text-lg font-bold transition-all duration-200"
+            style={{ 
+              backgroundColor: '#001a66', 
+              color: '#ffffff',
+              border: '2px solid #ffffff',
+              fontFamily: 'monospace',
+              letterSpacing: '2px',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#003399';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#001a66';
+            }}
           >
             MENU
           </button>
