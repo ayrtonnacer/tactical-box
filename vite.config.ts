@@ -5,7 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
-        base: "/rts-trainer/",
+        base: "/rts-tactical-box/",
   
   server: {
     host: "::",
