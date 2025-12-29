@@ -17,14 +17,14 @@ export function GameHUD({ hearts, timer, round }: GameHUDProps) {
   };
 
   return (
-    <div className="absolute inset-x-0 top-0 p-4 flex items-start justify-between pointer-events-none z-10">
+    <div className="absolute inset-x-0 top-0 p-4 md:p-8 flex items-start justify-between pointer-events-none z-10 font-display">
       {/* Left - Hearts */}
-      <div className="flex gap-1">
+      <div className="flex gap-2">
         {Array.from({ length: 3 }).map((_, i) => (
           <Heart
             key={i}
             className={cn(
-              "heart-icon",
+              "heart-icon w-6 h-6 md:w-8 md:h-8",
               i < hearts ? "heart-filled fill-current" : "heart-empty"
             )}
           />
@@ -33,13 +33,17 @@ export function GameHUD({ hearts, timer, round }: GameHUDProps) {
 
       {/* Center - Round */}
       <div className="text-center">
-        <div className="text-[10px] text-foreground/60 mb-1">ROUND</div>
-        <div className="text-2xl text-foreground">{round}</div>
+        <div className="text-xs md:text-sm text-foreground/70 mb-2 tracking-wider">
+          ROUND
+        </div>
+        <div className="text-4xl md:text-5xl font-bold text-foreground font-display">
+          {round}
+        </div>
       </div>
 
       {/* Right - Timer */}
       <div className={cn(
-        "text-lg text-foreground tabular-nums",
+        "text-3xl md:text-4xl font-bold text-foreground tabular-nums font-display tracking-wider",
         isLowTime && "timer-urgent"
       )}>
         {formatTime(timer)}
