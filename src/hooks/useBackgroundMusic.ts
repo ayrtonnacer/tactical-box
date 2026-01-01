@@ -57,23 +57,19 @@ export function useBackgroundMusic() {
   const toggleMusic = useCallback(() => {
     hasUserInteracted.current = true;
     
-    setIsMusicEnabled(prev => {
-      const newValue = !prev;
-      
-      if (audioRef.current) {
-        if (newValue) {
-          audioRef.current.play()
-            .then(() => setIsPlaying(true))
-            .catch((e) => console.log('Audio play failed:', e));
-        } else {
-          audioRef.current.pause();
-          setIsPlaying(false);
-        }
+    if (audioRef.current) {
+      if (isMusicEnabled) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+        setIsMusicEnabled(false);
+      } else {
+        audioRef.current.play()
+          .then(() => setIsPlaying(true))
+          .catch((e) => console.log('Audio play failed:', e));
+        setIsMusicEnabled(true);
       }
-      
-      return newValue;
-    });
-  }, []);
+    }
+  }, [isMusicEnabled]);
 
   return {
     isMusicEnabled,
