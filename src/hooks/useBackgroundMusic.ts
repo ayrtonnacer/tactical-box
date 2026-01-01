@@ -7,7 +7,9 @@ export function useBackgroundMusic() {
     return saved !== null ? saved === 'true' : true;
   });
   const [isPlaying, setIsPlaying] = useState(false);
+  const hasUserInteracted = useRef(false);
 
+  // Initialize audio element
   useEffect(() => {
     if (!audioRef.current) {
       audioRef.current = new Audio('/music/background.mp3');
@@ -23,27 +25,54 @@ export function useBackgroundMusic() {
     };
   }, []);
 
+  // Save preference to localStorage
   useEffect(() => {
     localStorage.setItem('musicEnabled', String(isMusicEnabled));
-    
-    if (audioRef.current) {
-      if (isMusicEnabled && !isPlaying) {
-        audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
-      } else if (!isMusicEnabled && isPlaying) {
-        audioRef.current.pause();
-        setIsPlaying(false);
-      }
+  }, [isMusicEnabled]);
+
+  // Handle play/pause based on enabled state
+  useEffect(() => {
+    if (!audioRef.current || !hasUserInteracted.current) return;
+
+    if (isMusicEnabled && !isPlaying) {
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch((e) => console.log('Audio play failed:', e));
+    } else if (!isMusicEnabled && isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
     }
   }, [isMusicEnabled, isPlaying]);
 
   const startMusic = useCallback(() => {
-    if (audioRef.current && isMusicEnabled && !isPlaying) {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+    hasUserInteracted.current = true;
+    
+    if (audioRef.current && isMusicEnabled) {
+      audioRef.current.play()
+        .then(() => setIsPlaying(true))
+        .catch((e) => console.log('Audio play failed:', e));
     }
-  }, [isMusicEnabled, isPlaying]);
+  }, [isMusicEnabled]);
 
   const toggleMusic = useCallback(() => {
-    setIsMusicEnabled(prev => !prev);
+    hasUserInteracted.current = true;
+    
+    setIsMusicEnabled(prev => {
+      const newValue = !prev;
+      
+      if (audioRef.current) {
+        if (newValue) {
+          audioRef.current.play()
+            .then(() => setIsPlaying(true))
+            .catch((e) => console.log('Audio play failed:', e));
+        } else {
+          audioRef.current.pause();
+          setIsPlaying(false);
+        }
+      }
+      
+      return newValue;
+    });
   }, []);
 
   return {
