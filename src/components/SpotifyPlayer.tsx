@@ -10,8 +10,9 @@ export function SpotifyPlayer() {
   }, []);
 
   return (
-    <div className="fixed bottom-4 right-4 z-20 max-w-sm rounded-lg overflow-hidden">
+    <div className="fixed bottom-4 right-4 z-50 max-w-sm rounded-lg overflow-hidden pointer-events-none">
       <iframe
+        className="pointer-events-auto"
         style={{
           borderRadius: '12px',
           width: '100%',

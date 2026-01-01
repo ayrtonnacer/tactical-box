@@ -3,7 +3,6 @@ import { GameCanvas } from './GameCanvas';
 import { GameHUD } from './GameHUD';
 import { MenuScreen } from './MenuScreen';
 import { GameOverScreen } from './GameOverScreen';
-import { SpotifyPlayer } from '../SpotifyPlayer';
 
 export function ShadowBoxGame() {
   const {
@@ -24,27 +23,21 @@ export function ShadowBoxGame() {
 
   if (gameState === 'menu') {
     return (
-      <>
-        <MenuScreen 
-          onStartGame={startGame} 
-          bestRound={bestRound}
-        />
-        <SpotifyPlayer />
-      </>
+      <MenuScreen 
+        onStartGame={startGame} 
+        bestRound={bestRound}
+      />
     );
   }
 
   if (gameState === 'gameover') {
     return (
-      <>
-        <GameOverScreen
-          round={round}
-          bestRound={bestRound}
-          onRetry={startGame}
-          onMenu={() => setGameState('menu')}
-        />
-        <SpotifyPlayer />
-      </>
+      <GameOverScreen
+        round={round}
+        bestRound={bestRound}
+        onRetry={startGame}
+        onMenu={() => setGameState('menu')}
+      />
     );
   }
 
@@ -64,8 +57,6 @@ export function ShadowBoxGame() {
         shakeScreen={shakeScreen}
         onResize={updateCanvasSize}
       />
-      
-      <SpotifyPlayer />
     </div>
   );
 }
