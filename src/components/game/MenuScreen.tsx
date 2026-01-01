@@ -1,30 +1,13 @@
-import { Coffee, Volume2, VolumeX } from 'lucide-react';
+import { Coffee } from 'lucide-react';
 
 interface MenuScreenProps {
   onStartGame: () => void;
   bestRound: number;
-  isMusicEnabled: boolean;
-  onToggleMusic: () => void;
 }
 
-export function MenuScreen({ onStartGame, bestRound, isMusicEnabled, onToggleMusic }: MenuScreenProps) {
+export function MenuScreen({ onStartGame, bestRound }: MenuScreenProps) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-between p-6 md:p-8 bg-background">
-      {/* Music Toggle - Top Right */}
-      <div className="absolute top-4 right-4">
-        <button
-          onClick={onToggleMusic}
-          className="p-2 text-foreground/60 hover:text-foreground transition-colors"
-          title={isMusicEnabled ? 'Disable music' : 'Enable music'}
-        >
-          {isMusicEnabled ? (
-            <Volume2 className="w-5 h-5 md:w-6 md:h-6" />
-          ) : (
-            <VolumeX className="w-5 h-5 md:w-6 md:h-6" />
-          )}
-        </button>
-      </div>
-
       {/* Top spacer */}
       <div className="flex-shrink-0" />
 

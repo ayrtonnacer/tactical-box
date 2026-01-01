@@ -1,12 +1,13 @@
-import { Heart, Volume2, VolumeX } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface GameHUDProps {
   hearts: number;
   timer: number;
   round: number;
+}
 
-export function GameHUD({ hearts, timer, round, ): GameHUDProps) {
+export function GameHUD({ hearts, timer, round }: GameHUDProps) {
   const isLowTime = timer <= 10;
 
   const formatTime = (seconds: number) => {
@@ -40,16 +41,12 @@ export function GameHUD({ hearts, timer, round, ): GameHUDProps) {
         </div>
       </div>
 
-      {/* Right - Timer + Music */}
-      <div className="flex items-start gap-4">
-        <div className={cn(
-          "text-3xl md:text-4xl font-bold text-foreground tabular-nums font-display tracking-wider",
-          isLowTime && "timer-urgent"
-        )}>
-          {formatTime(timer)}
-        </div>
-          )}
-        </button>
+      {/* Right - Timer */}
+      <div className={cn(
+        "text-3xl md:text-4xl font-bold text-foreground tabular-nums font-display tracking-wider",
+        isLowTime && "timer-urgent"
+      )}>
+        {formatTime(timer)}
       </div>
     </div>
   );

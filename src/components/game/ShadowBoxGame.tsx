@@ -22,30 +22,29 @@ export function ShadowBoxGame() {
     updateCanvasSize,
   } = useGameLogic();
 
-  const { isMusicEnabled, toggleMusic, startMusic } = useBackgroundMusic();
-
-  const handleStartGame = () => {
-    startMusic();
-    startGame();
-  };
-
   if (gameState === 'menu') {
     return (
-      <MenuScreen 
-        onStartGame={handleStartGame} 
-        bestRound={bestRound}
-      />
+      <>
+        <MenuScreen 
+          onStartGame={startGame} 
+          bestRound={bestRound}
+        />
+        <SpotifyPlayer />
+      </>
     );
   }
 
   if (gameState === 'gameover') {
     return (
-      <GameOverScreen
-        round={round}
-        bestRound={bestRound}
-        onRetry={handleStartGame}
-        onMenu={() => setGameState('menu')}
-      />
+      <>
+        <GameOverScreen
+          round={round}
+          bestRound={bestRound}
+          onRetry={startGame}
+          onMenu={() => setGameState('menu')}
+        />
+        <SpotifyPlayer />
+      </>
     );
   }
 
@@ -55,8 +54,6 @@ export function ShadowBoxGame() {
         hearts={hearts}
         timer={timer}
         round={round}
-        isMusicEnabled={isMusicEnabled}
-        onToggleMusic={toggleMusic}
       />
       
       <GameCanvas
@@ -66,8 +63,9 @@ export function ShadowBoxGame() {
         onSelectionComplete={handleSelectionComplete}
         shakeScreen={shakeScreen}
         onResize={updateCanvasSize}
-              <SpotifyPlayer />
       />
+      
+      <SpotifyPlayer />
     </div>
   );
 }
