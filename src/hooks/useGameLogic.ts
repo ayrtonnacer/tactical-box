@@ -7,12 +7,18 @@ const CIRCLE_SPACING = 50;
 const GAME_DURATION = 60; // 60 seconds total
 const RESPAWN_DELAY = 3000; // 3 seconds to respawn circles
 
-// Define safe margins to avoid HUD elements
+// Define safe margins to avoid HUD elements and Spotify player
 const HUD_MARGINS = {
   top: 100,
   left: 140,
   right: 100,
   bottom: 50,
+};
+
+// Spotify player exclusion zone (bottom-right corner)
+const SPOTIFY_ZONE = {
+  width: 320,
+  height: 180,
 };
 
 // Get config based on round
@@ -32,6 +38,19 @@ function generateCircles(yellowCount: number, whiteCount: number, canvasWidth: n
     bottom: canvasHeight - HUD_MARGINS.bottom,
   };
   
+  // Define Spotify player exclusion zone
+  const spotifyZone = {
+    left: canvasWidth - SPOTIFY_ZONE.width - 16, // 16px margin from edge
+    top: canvasHeight - SPOTIFY_ZONE.height - 16,
+    right: canvasWidth,
+    bottom: canvasHeight,
+  };
+  
+  // Check if a position is inside the Spotify zone
+  const isInSpotifyZone = (x: number, y: number): boolean => {
+    return x >= spotifyZone.left && y >= spotifyZone.top;
+  };
+  
   const availableWidth = playableArea.right - playableArea.left - CIRCLE_RADIUS * 2;
   const availableHeight = playableArea.bottom - playableArea.top - CIRCLE_RADIUS * 2;
   
@@ -41,10 +60,13 @@ function generateCircles(yellowCount: number, whiteCount: number, canvasWidth: n
   const positions: { x: number; y: number }[] = [];
   for (let row = 0; row < rows; row++) {
     for (let col = 0; col < cols; col++) {
-      positions.push({
-        x: playableArea.left + CIRCLE_RADIUS + col * CIRCLE_SPACING + CIRCLE_SPACING / 2,
-        y: playableArea.top + CIRCLE_RADIUS + row * CIRCLE_SPACING + CIRCLE_SPACING / 2,
-      });
+      const x = playableArea.left + CIRCLE_RADIUS + col * CIRCLE_SPACING + CIRCLE_SPACING / 2;
+      const y = playableArea.top + CIRCLE_RADIUS + row * CIRCLE_SPACING + CIRCLE_SPACING / 2;
+      
+      // Skip positions that fall within the Spotify player zone
+      if (!isInSpotifyZone(x, y)) {
+        positions.push({ x, y });
+      }
     }
   }
   
