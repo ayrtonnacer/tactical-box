@@ -1,5 +1,4 @@
 import { useGameLogic } from '@/hooks/useGameLogic';
-import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 import { GameCanvas } from './GameCanvas';
 import { GameHUD } from './GameHUD';
 import { MenuScreen } from './MenuScreen';
@@ -35,8 +34,6 @@ export function ShadowBoxGame() {
       <MenuScreen 
         onStartGame={handleStartGame} 
         bestRound={bestRound}
-        isMusicEnabled={isMusicEnabled}
-        onToggleMusic={toggleMusic}
       />
     );
   }
