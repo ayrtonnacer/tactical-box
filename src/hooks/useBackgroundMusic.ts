@@ -1,31 +1,30 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-// 8-bit style melody notes (frequencies in Hz)
+// Metal Slug 2 inspired fast-paced energetic music
+// Upbeat melody with quick notes for combat feel
 const MELODY = [
-  { note: 523.25, duration: 0.15 }, { note: 587.33, duration: 0.15 },
-  { note: 659.25, duration: 0.15 }, { note: 783.99, duration: 0.3 },
-  { note: 659.25, duration: 0.15 }, { note: 523.25, duration: 0.15 },
-  { note: 392.00, duration: 0.3 },  { note: 0, duration: 0.15 },
-  { note: 440.00, duration: 0.15 }, { note: 523.25, duration: 0.15 },
-  { note: 587.33, duration: 0.15 }, { note: 659.25, duration: 0.3 },
-  { note: 587.33, duration: 0.15 }, { note: 523.25, duration: 0.15 },
-  { note: 440.00, duration: 0.3 },  { note: 0, duration: 0.15 },
-  { note: 783.99, duration: 0.15 }, { note: 698.46, duration: 0.15 },
-  { note: 659.25, duration: 0.15 }, { note: 587.33, duration: 0.15 },
-  { note: 523.25, duration: 0.3 },  { note: 392.00, duration: 0.15 },
-  { note: 440.00, duration: 0.15 }, { note: 523.25, duration: 0.3 },
-  { note: 0, duration: 0.15 },      { note: 659.25, duration: 0.15 },
-  { note: 783.99, duration: 0.15 }, { note: 880.00, duration: 0.3 },
-  { note: 783.99, duration: 0.15 }, { note: 659.25, duration: 0.15 },
-  { note: 523.25, duration: 0.3 },  { note: 587.33, duration: 0.15 },
-  { note: 659.25, duration: 0.3 },
+  // Fast energetic riff
+  { note: 659.25, duration: 0.08 }, { note: 659.25, duration: 0.08 },
+  { note: 783.99, duration: 0.08 }, { note: 880.00, duration: 0.08 },
+  { note: 783.99, duration: 0.08 }, { note: 659.25, duration: 0.08 },
+  { note: 523.25, duration: 0.15 }, { note: 0, duration: 0.05 },
+  
+  // Ascending pattern
+  { note: 523.25, duration: 0.08 }, { note: 659.25, duration: 0.08 },
+  { note: 783.99, duration: 0.08 }, { note: 880.00, duration: 0.12 },
+  { note: 987.77, duration: 0.08 }, { note: 880.00, duration: 0.08 },
+  { note: 783.99, duration: 0.15 }, { note: 0, duration: 0.05 },
 ];
 
+// Powerful bass line
 const BASS = [
-  { note: 130.81, duration: 0.3 }, { note: 130.81, duration: 0.3 },
-  { note: 146.83, duration: 0.3 }, { note: 146.83, duration: 0.3 },
-  { note: 164.81, duration: 0.3 }, { note: 164.81, duration: 0.3 },
-  { note: 130.81, duration: 0.3 }, { note: 196.00, duration: 0.3 },
+  { note: 164.81, duration: 0.15 }, { note: 0, duration: 0.08 },
+  { note: 164.81, duration: 0.15 }, { note: 0, duration: 0.08 },
+  { note: 196.00, duration: 0.15 }, { note: 0, duration: 0.08 },
+  { note: 196.00, duration: 0.15 }, { note: 0, duration: 0.08 },
+  { note: 220.00, duration: 0.15 }, { note: 0, duration: 0.08 },
+  { note: 220.00, duration: 0.15 }, { note: 0, duration: 0.08 },
+  { note: 164.81, duration: 0.3 }, { note: 0, duration: 0.08 },
 ];
 
 export function useBackgroundMusic() {
@@ -71,7 +70,7 @@ export function useBackgroundMusic() {
   const scheduleMelody = useCallback(() => {
     if (!isPlayingRef.current) return;
     const note = MELODY[melodyIndexRef.current];
-    playNote(note.note, note.duration, 'square', 0.08);
+    playNote(note.note, note.duration, 'square', 0.12);
     melodyIndexRef.current = (melodyIndexRef.current + 1) % MELODY.length;
     melodyTimeoutRef.current = window.setTimeout(scheduleMelody, note.duration * 1000);
   }, [playNote]);
@@ -79,7 +78,7 @@ export function useBackgroundMusic() {
   const scheduleBass = useCallback(() => {
     if (!isPlayingRef.current) return;
     const note = BASS[bassIndexRef.current];
-    playNote(note.note, note.duration, 'triangle', 0.06);
+    playNote(note.note, note.duration, 'triangle', 0.08);
     bassIndexRef.current = (bassIndexRef.current + 1) % BASS.length;
     bassTimeoutRef.current = window.setTimeout(scheduleBass, note.duration * 1000);
   }, [playNote]);
