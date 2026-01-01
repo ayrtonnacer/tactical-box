@@ -1,4 +1,5 @@
 import { useGameLogic } from '@/hooks/useGameLogic';
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 import { GameCanvas } from './GameCanvas';
 import { GameHUD } from './GameHUD';
 import { MenuScreen } from './MenuScreen';
@@ -21,8 +22,22 @@ export function ShadowBoxGame() {
     updateCanvasSize,
   } = useGameLogic();
 
+  const { isMusicEnabled, toggleMusic, startMusic } = useBackgroundMusic();
+
+  const handleStartGame = () => {
+    startMusic();
+    startGame();
+  };
+
   if (gameState === 'menu') {
-    return <MenuScreen onStartGame={startGame} bestRound={bestRound} />;
+    return (
+      <MenuScreen 
+        onStartGame={handleStartGame} 
+        bestRound={bestRound}
+        isMusicEnabled={isMusicEnabled}
+        onToggleMusic={toggleMusic}
+      />
+    );
   }
 
   if (gameState === 'gameover') {
@@ -30,7 +45,7 @@ export function ShadowBoxGame() {
       <GameOverScreen
         round={round}
         bestRound={bestRound}
-        onRetry={startGame}
+        onRetry={handleStartGame}
         onMenu={() => setGameState('menu')}
       />
     );
@@ -42,6 +57,8 @@ export function ShadowBoxGame() {
         hearts={hearts}
         timer={timer}
         round={round}
+        isMusicEnabled={isMusicEnabled}
+        onToggleMusic={toggleMusic}
       />
       
       <GameCanvas

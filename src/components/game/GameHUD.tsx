@@ -1,13 +1,15 @@
-import { Heart } from 'lucide-react';
+import { Heart, Volume2, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface GameHUDProps {
   hearts: number;
   timer: number;
   round: number;
+  isMusicEnabled: boolean;
+  onToggleMusic: () => void;
 }
 
-export function GameHUD({ hearts, timer, round }: GameHUDProps) {
+export function GameHUD({ hearts, timer, round, isMusicEnabled, onToggleMusic }: GameHUDProps) {
   const isLowTime = timer <= 10;
 
   const formatTime = (seconds: number) => {
@@ -41,12 +43,25 @@ export function GameHUD({ hearts, timer, round }: GameHUDProps) {
         </div>
       </div>
 
-      {/* Right - Timer */}
-      <div className={cn(
-        "text-3xl md:text-4xl font-bold text-foreground tabular-nums font-display tracking-wider",
-        isLowTime && "timer-urgent"
-      )}>
-        {formatTime(timer)}
+      {/* Right - Timer + Music */}
+      <div className="flex items-start gap-4">
+        <div className={cn(
+          "text-3xl md:text-4xl font-bold text-foreground tabular-nums font-display tracking-wider",
+          isLowTime && "timer-urgent"
+        )}>
+          {formatTime(timer)}
+        </div>
+        <button
+          onClick={onToggleMusic}
+          className="pointer-events-auto p-1 text-foreground/60 hover:text-foreground transition-colors"
+          title={isMusicEnabled ? 'Disable music' : 'Enable music'}
+        >
+          {isMusicEnabled ? (
+            <Volume2 className="w-5 h-5 md:w-6 md:h-6" />
+          ) : (
+            <VolumeX className="w-5 h-5 md:w-6 md:h-6" />
+          )}
+        </button>
       </div>
     </div>
   );
