@@ -1,210 +1,171 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* ShadowBox - 8-bit Monochrome Blue/White */
-
+/* ShadowBox - Spotify Dark Theme */
 @layer base {
-  :root {
-    /* Pure CRT Blue */
-    --background: 240 100% 25%;
-    --foreground: 0 0% 100%;
-
-    --card: 240 100% 30%;
-    --card-foreground: 0 0% 100%;
-
-    --popover: 240 100% 28%;
-    --popover-foreground: 0 0% 100%;
-
-    /* Primary - White */
-    --primary: 0 0% 100%;
-    --primary-foreground: 240 100% 25%;
-
-    /* Secondary - Light Blue */
-    --secondary: 210 100% 80%;
-    --secondary-foreground: 240 100% 20%;
-
-    /* Muted - Dim Blue */
-    --muted: 240 60% 40%;
-    --muted-foreground: 210 50% 70%;
-
-    /* Accent - Bright Blue */
-    --accent: 200 100% 60%;
-    --accent-foreground: 0 0% 100%;
-
-    /* Destructive - kept for game over text */
-    --destructive: 0 0% 100%;
-    --destructive-foreground: 240 100% 25%;
-
-    --border: 210 60% 50%;
-    --input: 240 60% 40%;
-    --ring: 0 0% 100%;
-
-    --radius: 0;
-
-    /* Game specific - monochrome */
-    --game-bg: 240 100% 25%;
-    --circle-good: 0 0% 100%;
-    --circle-bad: 210 60% 60%;
-    --circle-captured: 0 70% 60%;
-    --selection-box: 180 100% 70%;
-  }
-
-  .dark {
-    --background: 240 100% 15%;
-    --foreground: 0 0% 100%;
-    --card: 240 100% 20%;
-    --card-foreground: 0 0% 100%;
-    --popover: 240 100% 18%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 0 0% 100%;
-    --primary-foreground: 240 100% 15%;
-    --secondary: 210 80% 70%;
-    --secondary-foreground: 240 100% 15%;
-    --muted: 240 50% 25%;
-    --muted-foreground: 210 40% 60%;
-    --accent: 200 100% 50%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 0% 100%;
-    --destructive-foreground: 240 100% 15%;
-    --border: 210 50% 40%;
-    --input: 240 50% 25%;
-    --ring: 0 0% 100%;
-    --game-bg: 240 100% 15%;
-  }
+ :root {
+ /* Spotify Dark Background #1f1f1f */
+ --background: 0 0% 12%;
+ --foreground: 0 0% 100%;
+ --card: 0 0% 18%;
+ --card-foreground: 0 0% 100%;
+ --popover: 0 0% 16%;
+ --popover-foreground: 0 0% 100%;
+ /* Primary - White */
+ --primary: 0 0% 100%;
+ --primary-foreground: 0 0% 12%;
+ /* Secondary - Spotify Green */
+ --secondary: 145 100% 36%;
+ --secondary-foreground: 0 0% 100%;
+ /* Muted - Dark Gray */
+ --muted: 0 0% 25%;
+ --muted-foreground: 0 0% 70%;
+ /* Accent - Bright Spotify Green */
+ --accent: 142 100% 43%;
+ --accent-foreground: 0 0% 100%;
+ /* Destructive - Red accent */
+ --destructive: 0 84% 60%;
+ --destructive-foreground: 0 0% 100%;
+ --border: 0 0% 20%;
+ --input: 0 0% 18%;
+ --ring: 0 0% 100%;
+ --radius: 0;
+ /* Game specific */
+ --game-bg: 0 0% 12%;
+ --circle-good: 0 0% 100%;
+ --circle-bad: 0 0% 50%;
+ --circle-captured: 0 84% 60%;
+ --selection-box: 142 100% 43%;
+ }
+ .dark {
+ --background: 0 0% 8%;
+ --foreground: 0 0% 100%;
+ --card: 0 0% 14%;
+ --card-foreground: 0 0% 100%;
+ --popover: 0 0% 12%;
+ --popover-foreground: 0 0% 100%;
+ --primary: 0 0% 100%;
+ --primary-foreground: 0 0% 8%;
+ --secondary: 145 100% 36%;
+ --secondary-foreground: 0 0% 100%;
+ --muted: 0 0% 20%;
+ --muted-foreground: 0 0% 60%;
+ --accent: 142 100% 43%;
+ --accent-foreground: 0 0% 100%;
+ --destructive: 0 84% 60%;
+ --destructive-foreground: 0 0% 100%;
+ --border: 0 0% 16%;
+ --input: 0 0% 14%;
+ --ring: 0 0% 100%;
+ --game-bg: 0 0% 8%;
+ }
 }
-
 @layer base {
-  * {
-    @apply border-border;
-  }
-
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-family: 'Press Start 2P', cursive;
-    image-rendering: pixelated;
-  }
+ * {
+ @apply border-border;
+ }
+ body {
+ @apply bg-background text-foreground antialiased;
+ font-family: 'Press Start 2P', cursive;
+ image-rendering: pixelated;
+ }
 }
-
 @layer components {
-  .game-canvas {
-    @apply relative overflow-hidden select-none;
-    background: hsl(var(--game-bg));
-  }
-
-  .circle-base {
-    @apply absolute rounded-full flex items-center justify-center;
-  }
-
-  /* Good circles - solid white */
-  .circle-good {
-    background: hsl(var(--circle-good));
-  }
-
-  /* Bad circles - outline only */
-  .circle-bad {
-    background: transparent;
-    border: 3px solid hsl(var(--circle-bad));
-  }
-
-  /* Captured circles: show feedback briefly, then disappear */
-  .circle-captured-bad {
-    background: transparent;
-    border: 3px solid hsl(var(--foreground));
-    pointer-events: none;
-    animation: captured-out 0.28s ease-out forwards;
-    animation-delay: 0.12s;
-  }
-
-  .circle-captured-good {
-    background: hsl(var(--circle-good));
-    pointer-events: none;
-    animation: captured-out 0.28s ease-out forwards;
-    animation-delay: 0.12s;
-  }
-
-  .selection-box {
-    @apply absolute pointer-events-none;
-    border: 2px solid hsl(var(--selection-box));
-    background: hsl(var(--selection-box) / 0.15);
-  }
-
-  .game-button {
-    @apply px-8 py-4 text-xs uppercase;
-    background: hsl(var(--primary));
-    color: hsl(var(--primary-foreground));
-    border: none;
-  }
-
-  .game-button:hover {
-    filter: brightness(0.9);
-  }
-
-  .game-button:active {
-    filter: brightness(0.8);
-  }
-
-  .game-button-secondary {
-    background: transparent;
-    color: hsl(var(--foreground));
-    border: 2px solid hsl(var(--foreground));
-  }
-
-  .game-button-secondary:hover {
-    background: hsl(var(--foreground) / 0.1);
-  }
-
-  .heart-icon {
-    @apply w-5 h-5;
-  }
-
-  .heart-filled {
-    color: hsl(var(--foreground));
-  }
-
-  .heart-empty {
-    color: hsl(var(--foreground));
-    opacity: 0.2;
-  }
-
-  .timer-urgent {
-    animation: blink 0.5s step-end infinite;
-  }
+ .game-canvas {
+ @apply relative overflow-hidden select-none;
+ background: hsl(var(--game-bg));
+ }
+ .circle-base {
+ @apply absolute rounded-full flex items-center justify-center;
+ }
+ /* Good circles - solid white */
+ .circle-good {
+ background: hsl(var(--circle-good));
+ }
+ /* Bad circles - outline only */
+ .circle-bad {
+ background: transparent;
+ border: 3px solid hsl(var(--circle-bad));
+ }
+ /* Captured circles: show feedback briefly, then disappear */
+ .circle-captured-bad {
+ background: transparent;
+ border: 3px solid hsl(var(--foreground));
+ pointer-events: none;
+ animation: captured-out 0.28s ease-out forwards;
+ animation-delay: 0.12s;
+ }
+ .circle-captured-good {
+ background: hsl(var(--circle-good));
+ pointer-events: none;
+ animation: captured-out 0.28s ease-out forwards;
+ animation-delay: 0.12s;
+ }
+ .selection-box {
+ @apply absolute pointer-events-none;
+ border: 2px solid hsl(var(--selection-box));
+ background: hsl(var(--selection-box) / 0.15);
+ }
+ .game-button {
+ @apply px-8 py-4 text-xs uppercase;
+ background: hsl(var(--primary));
+ color: hsl(var(--primary-foreground));
+ border: none;
+ }
+ .game-button:hover {
+ filter: brightness(0.9);
+ }
+ .game-button:active {
+ filter: brightness(0.8);
+ }
+ .game-button-secondary {
+ background: transparent;
+ color: hsl(var(--foreground));
+ border: 2px solid hsl(var(--foreground));
+ }
+ .game-button-secondary:hover {
+ background: hsl(var(--foreground) / 0.1);
+ }
+ .heart-icon {
+ @apply w-5 h-5;
+ }
+ .heart-filled {
+ color: hsl(var(--foreground));
+ }
+ .heart-empty {
+ color: hsl(var(--foreground));
+ opacity: 0.2;
+ }
+ .timer-urgent {
+ animation: blink 0.5s step-end infinite;
+ }
 }
-
 @layer utilities {
-  .font-display {
-    font-family: 'Press Start 2P', cursive;
-  }
+ .font-display {
+ font-family: 'Press Start 2P', cursive;
+ }
 }
-
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+ 0%, 100% { opacity: 1; }
+ 50% { opacity: 0.3; }
 }
-
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
+ 0%, 100% { transform: translateX(0); }
+ 25% { transform: translateX(-4px); }
+ 75% { transform: translateX(4px); }
 }
-
 @keyframes pop-in {
-  0% { opacity: 0; transform: scale(0.8); }
-  100% { opacity: 1; transform: scale(1); }
+ 0% { opacity: 0; transform: scale(0.8); }
+ 100% { opacity: 1; transform: scale(1); }
 }
-
 @keyframes captured-out {
-  0% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(0.85); }
+ 0% { opacity: 1; transform: scale(1); }
+ 100% { opacity: 0; transform: scale(0.85); }
 }
-
 .animate-shake {
-  animation: shake 0.2s ease-in-out;
+ animation: shake 0.2s ease-in-out;
 }
-
 .animate-pop-in {
-  animation: pop-in 0.15s ease-out forwards;
+ animation: pop-in 0.15s ease-out forwards;
 }
